@@ -1,0 +1,8 @@
+[package]
+name = "viberaven"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+description = "Evidence-backed catalogue and research archive"
+
+[dependencies]
