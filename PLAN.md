@@ -1,7 +1,7 @@
 # Viberaven implementation plan
 
-Status: Phase 1 bootstrap complete; Phase 2 has not started.
-Updated at local date 2026-09-23, Asia/Kuala_Lumpur.
+Status: Phase 1 bootstrap complete; GitHub workflow setup in progress; Phase 2 has not started.
+Updated at local date 2026-09-25, Asia/Kuala_Lumpur.
 Read this file to resume; read [STACK.md](STACK.md) for stack decisions, exceptions, costs, and memory gates.
 These documents do not authorize installation, model/API spending, publishing, or changes to adjacent projects.
 
@@ -14,7 +14,9 @@ Later use the same evidence for guides, workflows, and other content rather than
 
 ## Current state and references
 
-- Workspace: `D:\Dev\viberaven`; Phase 1 has a minimal Rust library/CLI, README, agent guidance, and initialized Git repository; no commit has been made.
+- Workspace: `D:\Dev\viberaven`; Phase 1 has a minimal Rust library/CLI, README, agent guidance, and Git repository pushed to `origin/main`.
+- GitHub repository: `izanorshahril/viberaven`, with local `main` tracking `origin/main`; Matt Pocock's GitHub issue conventions are configured.
+- The GitHub CLI has a saved account entry, but its keyring token is invalid; network egress blocks refresh from this shell, so Project v2 creation/linking and remote label setup remain pending.
 - Local `D:\Dev\vibe-cat` is absent, but the public [vibe-cat prototype](https://github.com/izanorshahril/vibe-cat) remains available; preserve useful behavior, not its Python implementation.
 - [yt-research](https://github.com/izanorshahril/yt-research) provides transcript/source identity and export references; it is not the new runtime.
 - `D:\Dev\awesome-vibe-ai` contains the README/CSV and untracked `Inspirationst.txt`; its listings are discovery leads, not current factual authority; preserve unrelated edits.
@@ -98,13 +100,14 @@ Apply [STACK.md](STACK.md)'s resource gates; no model is approved for download o
 | Item | State |
 | --- | --- |
 | Completed | Workspace/prototype/Farseer inspection; contributor research; cost/memory filtering; planning documents; Phase 1 bootstrap |
-| Files created | `HANDOFF.md`, `README.md`, `AGENTS.md`, `.gitignore`, `Cargo.toml`, `Cargo.lock`, `src/lib.rs`, `src/main.rs`; updated `PLAN.md` and `STACK.md` |
-| Application code / tests / Git initialization | Minimal help/version CLI and parser test added; Git initialized without a commit |
+| Files created | `HANDOFF.md`, `README.md`, `AGENTS.md`, `.gitignore`, `Cargo.toml`, `Cargo.lock`, `src/lib.rs`, `src/main.rs`; `docs/agents/` contains tracker, labels, and domain guidance; updated `PLAN.md` and `STACK.md` |
+| Application code / tests / Git initialization | Minimal help/version CLI and parser test added; Git initialized and pushed to `origin/main` |
 | Checks | `cargo build --offline`, `cargo test --offline` (1 passed), `cargo fmt --all -- --check`, `cargo clippy --offline --all-targets -- -D warnings`, CLI help/version, and unsupported-argument exit code 2 all passed |
 | Installs / downloads / inference / paid model calls | No dependencies installed; no model download/inference or paid calls |
 | Adjacent repositories / existing services | Not modified |
 | Next action | Phase 2 only after an implementation request |
 | Optional AI prerequisites | Locate llama.cpp executable; verify compatible build; evaluate a small model; approve resource use or hosted budget |
+| GitHub planning setup | Repository-side skill config is recorded under `docs/agents/`; refresh `gh` from a network-enabled shell, then create and link the Viberaven Roadmap Project |
 
 New session: read this plan, inspect the actual workspace and applicable instructions, then work only on the requested phase.
 Update this checkpoint with changed files, checks actually run, decisions, and remaining work instead of creating duplicate handoff files.

@@ -51,6 +51,11 @@ cargo test
 ├── AGENTS.md
 ├── Cargo.lock
 ├── Cargo.toml
+├── docs/
+│   └── agents/
+│       ├── domain.md
+│       ├── issue-tracker.md
+│       └── triage-labels.md
 ├── HANDOFF.md
 ├── PLAN.md
 ├── README.md
@@ -58,3 +63,5 @@ cargo test
 ```
 
 Read [PLAN.md](PLAN.md) for the phased delivery sequence and [STACK.md](STACK.md) for dependency, cost, and resource decisions.
+
+Read [docs/agents/issue-tracker.md](docs/agents/issue-tracker.md) for the GitHub Issues and Project workflow.

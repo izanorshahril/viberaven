@@ -6,3 +6,17 @@
 - Keep hosted services, model downloads, resident model processes, and Farseer integration behind an explicitly requested phase with stated cost and resource limits.
 - Limit adjacent-repository edits to work explicitly scoped for that repository, and read its current instructions and contracts before changing it.
 - Run the Rust checks listed in `PLAN.md` before completing a code phase.
+
+## Agent skills
+
+### Issue tracker
+
+Track specifications and implementation tickets in GitHub Issues; use the Viberaven Roadmap Project for planning status after it is linked. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Map Matt Pocock's five canonical triage roles to this repository's label names. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Use the single-context layout for domain language and architecture decisions. See `docs/agents/domain.md`.

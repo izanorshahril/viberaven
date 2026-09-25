@@ -1,12 +1,16 @@
 # Viberaven handoff
 
-Updated: 2026-09-23 (Asia/Kuala_Lumpur).
+Updated: 2026-09-25 (Asia/Kuala_Lumpur).
 
 ## Current state
 
-Phase 1 is bootstrapped with a minimal Rust library/CLI, README, agent guidance, `.gitignore`, and an initialized Git repository; no commit has been made.
+Phase 1 is bootstrapped with a minimal Rust library/CLI, README, agent guidance, `.gitignore`, and a Git repository pushed to `origin/main`.
 
 The CLI supports help and version output, while ingestion, persistence, search, review, and export remain unimplemented.
+
+The repository is now pushed to `izanorshahril/viberaven`, and local `main` tracks `origin/main`.
+
+Matt Pocock's GitHub issue-tracker setup is recorded in `docs/agents/`; Project v2 creation and remote label setup are pending because the saved `gh` keyring token is invalid and this shell cannot reach GitHub's auth endpoint.
 
 Offline build, formatting, Clippy, and the CLI parser test pass; `--help` and `--version` run, and an unsupported argument exits with code 2.
 
@@ -27,6 +31,8 @@ The prior project checkpoint records workspace/prototype/Farseer inspection, con
 ## Resume
 
 Read [PLAN.md](PLAN.md) for the delivery sequence and current checkpoint; read [STACK.md](STACK.md) for dependency, cost, and resource decisions.
+
+Run `gh auth refresh --hostname github.com --scopes project` in a network-enabled shell, then create and link the Viberaven Roadmap Project and record its URL in `docs/agents/issue-tracker.md`.
 
 Continue with Phase 2 only when requested, preserving the offline default and the human-review requirements in `PLAN.md`.
 
