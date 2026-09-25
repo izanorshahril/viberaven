@@ -1,6 +1,6 @@
 # Viberaven handoff
 
-Updated: 2026-09-25 (Asia/Kuala_Lumpur).
+Updated: 2026-09-26 (Asia/Kuala_Lumpur).
 
 ## Current state
 
@@ -10,7 +10,11 @@ The CLI supports help and version output, while ingestion, persistence, search, 
 
 The repository is now pushed to `izanorshahril/viberaven`, and local `main` tracks `origin/main`.
 
-Matt Pocock's GitHub issue-tracker setup is recorded in `docs/agents/`; Project v2 creation and remote label setup are pending because the saved `gh` keyring token is invalid and this shell cannot reach GitHub's auth endpoint.
+Matt Pocock's GitHub issue-tracker setup is recorded in `docs/agents/`; private Project #2, “Viberaven Roadmap,” is linked to the repository, and the triage labels are present.
+
+GitHub issue creation, project item addition, listing, and status updates are available through `gh`; routine tracking does not require a browser.
+
+The `project` authorization scope is required; selecting a default repository in project settings is optional and only affects issues created from the Project interface.
 
 Offline build, formatting, Clippy, and the CLI parser test pass; `--help` and `--version` run, and an unsupported argument exits with code 2.
 
@@ -32,7 +36,9 @@ The prior project checkpoint records workspace/prototype/Farseer inspection, con
 
 Read [PLAN.md](PLAN.md) for the delivery sequence and current checkpoint; read [STACK.md](STACK.md) for dependency, cost, and resource decisions.
 
-Run `gh auth refresh --hostname github.com --scopes project` in a network-enabled shell, then create and link the Viberaven Roadmap Project and record its URL in `docs/agents/issue-tracker.md`.
+Use `gh issue create --repo izanorshahril/viberaven --title "..." --body "..." --project "Viberaven Roadmap"` to create and track an issue in one CLI operation; use `gh project item-add` for existing issues.
+
+If project commands report a missing authorization scope, check `gh auth status` and run `gh auth refresh --hostname github.com --scopes project` in a network-enabled shell.
 
 Continue with Phase 2 only when requested, preserving the offline default and the human-review requirements in `PLAN.md`.
 
