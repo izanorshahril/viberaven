@@ -16,15 +16,13 @@ Use the `gh` CLI for issue operations; commands run in this checkout resolve the
 
 ## Planning project
 
-Create a user-owned GitHub Project named `Viberaven Roadmap` to track implementation issue status.
+Use the private user-owned [Viberaven Roadmap Project](https://github.com/users/izanorshahril/projects/2) to track implementation issue status.
 
-Set the project's default repository to this repository and link every implementation issue to the project.
+The project is linked to `izanorshahril/viberaven`; set its default repository to this repository in GitHub project settings.
 
 Use GitHub Issues as the durable specification; use project fields for planning status.
 
-Project creation and linking are pending because the saved `gh` keyring token is invalid.
-
-Run `gh auth refresh --hostname github.com --scopes project` in a shell with network access, then add the project URL here.
+Link each implementation issue to the project when the issue is created.
 
 ## Wayfinding
 
