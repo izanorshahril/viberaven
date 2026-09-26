@@ -528,3 +528,110 @@ fn export_apply_detects_catalogue_changes_and_supports_rollback() {
     export::rollback(&target, &receipt.backup, &receipt.content_sha256).unwrap();
     assert!(!target.exists());
 }
+
+#[test]
+fn readme_export_preserves_and_replaces_only_the_catalogue_block() {
+    let temp = TempDir::new();
+    let database = temp.path().join("catalogue.sqlite3");
+    let target = temp.path().join("README.md");
+    let unrelated = "# Project notes\n\nThis section is maintained by hand.\n";
+    fs::write(&target, unrelated).unwrap();
+
+    let mut store = Store::open(&database).unwrap();
+    let receipt = store
+        .ingest(PreparedDocument {
+            uri: "https://example.com/readme-export".to_owned(),
+            title: Some("Catalogue source".to_owned()),
+            media_type: "text/plain".to_owned(),
+            content_hash: hash_bytes(b"Source evidence for README export."),
+            raw_content: b"Source evidence for README export.".to_vec(),
+            extracted_text: "Source evidence for README export.".to_owned(),
+            published_at: None,
+            last_modified_at: None,
+            etag: None,
+            retrieved_at: now_unix(),
+        })
+        .unwrap();
+    let assessment = |name: &str| AssessmentInput {
+        vendor: Some("Example Vendor".to_owned()),
+        name: name.to_owned(),
+        version: Some("1.0".to_owned()),
+        use_case: "catalogue export".to_owned(),
+        criteria: "has traceable evidence".to_owned(),
+        decision: Some("approved".to_owned()),
+        decision_date: Some("2026-09-26".to_owned()),
+        reviewer: Some("Ada".to_owned()),
+        state: "approved".to_owned(),
+    };
+    store
+        .create_assessment(assessment("Alpha"), &receipt.evidence_ids)
+        .unwrap();
+
+    let preview = export::preview(&store, ExportFormat::Readme).unwrap();
+    let preview_text = String::from_utf8(preview.content.clone()).unwrap();
+    assert!(preview_text.contains("<!-- BEGIN VIBERAVEN CATALOGUE -->"));
+    assert!(preview_text.contains("<!-- END VIBERAVEN CATALOGUE -->"));
+    let initial_target = export::target_fingerprint(&target).unwrap();
+    let applied = export::apply(
+        &store,
+        ExportFormat::Readme,
+        &target,
+        &initial_target,
+        &preview.sha256,
+    )
+    .unwrap();
+    let first_result = fs::read_to_string(&target).unwrap();
+    assert!(first_result.starts_with(unrelated));
+    assert!(first_result.contains("<!-- BEGIN VIBERAVEN CATALOGUE -->"));
+    assert!(first_result.contains("Alpha (1.0)"));
+
+    store
+        .create_assessment(assessment("Beta"), &receipt.evidence_ids)
+        .unwrap();
+    let next_preview = export::preview(&store, ExportFormat::Readme).unwrap();
+    let current_target = export::target_fingerprint(&target).unwrap();
+    let updated = export::apply(
+        &store,
+        ExportFormat::Readme,
+        &target,
+        &current_target,
+        &next_preview.sha256,
+    )
+    .unwrap();
+    let final_result = fs::read_to_string(&target).unwrap();
+    assert!(final_result.starts_with(unrelated));
+    assert!(final_result.contains("Alpha (1.0)"));
+    assert!(final_result.contains("Beta (1.0)"));
+    assert_eq!(
+        final_result
+            .matches("<!-- BEGIN VIBERAVEN CATALOGUE -->")
+            .count(),
+        1
+    );
+    assert_eq!(
+        final_result
+            .matches("<!-- END VIBERAVEN CATALOGUE -->")
+            .count(),
+        1
+    );
+    export::rollback(&target, &updated.backup, &updated.content_sha256).unwrap();
+    assert_eq!(fs::read_to_string(&target).unwrap(), first_result);
+    export::rollback(&target, &applied.backup, &applied.content_sha256).unwrap();
+    assert_eq!(fs::read_to_string(&target).unwrap(), unrelated);
+
+    let malformed = "# Notes\n<!-- BEGIN VIBERAVEN CATALOGUE -->\nunfinished block\n";
+    fs::write(&target, malformed).unwrap();
+    let malformed_fingerprint = export::target_fingerprint(&target).unwrap();
+    let preview = export::preview(&store, ExportFormat::Readme).unwrap();
+    assert!(
+        export::apply(
+            &store,
+            ExportFormat::Readme,
+            &target,
+            &malformed_fingerprint,
+            &preview.sha256,
+        )
+        .is_err()
+    );
+    assert_eq!(fs::read_to_string(&target).unwrap(), malformed);
+}

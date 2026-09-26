@@ -74,7 +74,8 @@ pub fn help_text() -> String {
             "  --allow-root PATH        Permitted local-source root (default: current directory)\n",
             "  --limit N                Search limit (1-100) or refresh job limit (1-10)\n",
             "  --format csv|readme       Export format\n",
-            "  --target PATH            Explicit export destination; preview never writes it\n\n",
+            "  --target PATH            Explicit export destination; README updates a managed block\n",
+            "                           and preview never writes the target\n\n",
             "Local documents are limited to 5 MiB UTF-8 .txt, .md, .rst, and .html files.\n",
             "Web input uses HTTPS only, rejects redirects and non-public DNS results, and is limited to 5 MiB.\n",
             "Assessment state is draft, approved, or rejected; only approved assessments appear in exports.\n"

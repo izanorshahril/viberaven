@@ -12,6 +12,8 @@ use crate::{
 };
 
 const MISSING_MARKER: &[u8] = b"VIBERAVEN-ABSENT-TARGET\n";
+const README_BEGIN: &str = "<!-- BEGIN VIBERAVEN CATALOGUE -->";
+const README_END: &str = "<!-- END VIBERAVEN CATALOGUE -->";
 static NEXT_SWAP_ID: AtomicUsize = AtomicUsize::new(0);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -90,13 +92,19 @@ pub fn apply(
             "export destination changed after preview; review the current file before applying",
         ));
     }
+    let content = match format {
+        ExportFormat::Csv => rendered.content,
+        ExportFormat::Readme if current == "missing" => rendered.content,
+        ExportFormat::Readme => merge_readme_block(&fs::read(&target)?, &rendered.content)?,
+    };
+    let content_sha256 = ingest::hash_bytes(&content);
     let backup = create_backup(&target, &current)?;
-    let temporary = write_temporary(&target, &rendered.content)?;
-    match replace_file(&target, &temporary, &current, &rendered.sha256) {
+    let temporary = write_temporary(&target, &content)?;
+    match replace_file(&target, &temporary, &current, &content_sha256) {
         Ok(()) => Ok(ApplyReceipt {
             target,
             backup,
-            content_sha256: rendered.sha256,
+            content_sha256,
         }),
         Err(error) => {
             let _ = fs::remove_file(&temporary);
@@ -210,10 +218,10 @@ fn render_csv(assessments: &[AssessmentRecord]) -> String {
 
 fn render_readme(assessments: &[AssessmentRecord]) -> String {
     let mut output = String::from(
-        "# Viberaven catalogue\n\nGenerated from human-approved assessments. Evidence links preserve their source references.\n",
+        "<!-- BEGIN VIBERAVEN CATALOGUE -->\n\n# Viberaven catalogue\n\nGenerated from human-approved assessments. Evidence links preserve their source references.\n",
     );
     if assessments.is_empty() {
-        output.push_str("\nNo approved assessments.\n");
+        output.push_str("\nNo approved assessments.\n\n<!-- END VIBERAVEN CATALOGUE -->\n");
         return output;
     }
     for assessment in assessments {
@@ -256,7 +264,76 @@ fn render_readme(assessments: &[AssessmentRecord]) -> String {
             ));
         }
     }
+    output.push_str("\n<!-- END VIBERAVEN CATALOGUE -->\n");
     output
+}
+
+fn merge_readme_block(existing: &[u8], generated: &[u8]) -> Result<Vec<u8>> {
+    let existing = std::str::from_utf8(existing)
+        .map_err(|_| invalid_input("README export target must be valid UTF-8"))?;
+    let generated = std::str::from_utf8(generated)
+        .map_err(|_| invalid_input("README preview must be valid UTF-8"))?;
+    let begin_positions = existing
+        .match_indices(README_BEGIN)
+        .map(|(position, _)| position)
+        .collect::<Vec<_>>();
+    let end_positions = existing
+        .match_indices(README_END)
+        .map(|(position, _)| position)
+        .collect::<Vec<_>>();
+
+    match (begin_positions.as_slice(), end_positions.as_slice()) {
+        ([], []) => {
+            let mut merged = existing.to_owned();
+            if !merged.is_empty() {
+                let newline = if merged.ends_with("\r\n") {
+                    "\r\n"
+                } else {
+                    "\n"
+                };
+                if !merged.ends_with(&format!("{newline}{newline}")) {
+                    if merged.ends_with(newline) {
+                        merged.push_str(newline);
+                    } else {
+                        merged.push_str(newline);
+                        merged.push_str(newline);
+                    }
+                }
+            }
+            merged.push_str(generated);
+            Ok(merged.into_bytes())
+        }
+        ([begin], [end]) if begin < end => {
+            let begin_end = begin + README_BEGIN.len();
+            let end_after_marker = end + README_END.len();
+            let bytes = existing.as_bytes();
+            if (*begin > 0 && bytes[begin - 1] != b'\n')
+                || !matches!(bytes.get(begin_end), None | Some(b'\r' | b'\n'))
+                || (*end > 0 && bytes[end - 1] != b'\n')
+                || !matches!(bytes.get(end_after_marker), None | Some(b'\r' | b'\n'))
+            {
+                return Err(invalid_input(
+                    "README catalogue markers must each occupy a full line",
+                ));
+            }
+            let mut replacement_end = end_after_marker;
+            if bytes.get(replacement_end) == Some(&b'\r')
+                && bytes.get(replacement_end + 1) == Some(&b'\n')
+            {
+                replacement_end += 2;
+            } else if bytes.get(replacement_end) == Some(&b'\n') {
+                replacement_end += 1;
+            }
+            let mut merged = String::with_capacity(existing.len() + generated.len());
+            merged.push_str(&existing[..*begin]);
+            merged.push_str(generated);
+            merged.push_str(&existing[replacement_end..]);
+            Ok(merged.into_bytes())
+        }
+        _ => Err(invalid_input(
+            "README export target has missing, duplicate, or reversed catalogue markers",
+        )),
+    }
 }
 
 fn csv_field(value: &str) -> String {

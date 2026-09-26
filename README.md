@@ -9,7 +9,7 @@ It stores source provenance and reviewed assessments locally, with a headless Ru
 - Preserve source identity, publication and retrieval metadata, content hashes, extracted text, and traceable evidence segments.
 - Deduplicate exact content and search evidence locally with SQLite FTS5.
 - Record draft, approved, or rejected product/version assessments; approved assessments require a decision, reviewer, date, and evidence.
-- Preview deterministic README or CSV exports, then apply them only to an explicit destination after checking its fingerprint.
+- Preview deterministic README or CSV exports, then apply them only to an explicit destination after checking its fingerprint; README output updates a managed block and preserves surrounding content.
 - Back up an export target before applying and support rollback while the target still matches the applied content.
 - Schedule bounded HTTPS refreshes and run them once from the CLI; changed content creates a pending review proposal, while prior evidence remains available.
 - Record source-change review decisions without inferring product identity, supersession, or export changes.

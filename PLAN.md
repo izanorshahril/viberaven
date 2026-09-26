@@ -106,12 +106,12 @@ Apply [STACK.md](STACK.md)'s resource gates; no model is approved for download o
 | --- | --- |
 | Completed | Phase 1 bootstrap; Phase 2 ingest/search/review/export-preview slice; Phase 4 durable refresh, review proposals, explicit export/apply/rollback; GitHub Project skill research and repo-local board skill |
 | Changed files | `Cargo.toml`, `Cargo.lock`, `src/{cli,export,ingest,lib,main,refresh,store}.rs`, `tests/{refresh_state,vertical_slice}.rs`, `README.md`, `PLAN.md`, `STACK.md`, and Clippy cleanup; removed obsolete `HANDOFF.md` |
-| Checks | `cargo fmt --all -- --check`, `cargo clippy --locked --offline --all-targets -- -D warnings`, and `cargo test --locked --offline` pass; 11 tests pass across library and integration suites |
+| Checks | `cargo fmt --all -- --check`, `cargo clippy --locked --offline --all-targets -- -D warnings`, and `cargo test --locked --offline` pass; 12 tests pass, with CLI help/version smoke checks also passing |
 | Storage and networking | SQLite is bundled with FTS5; inputs and network work are bounded; default operation is offline, and no background service starts |
 | Model and hosted calls | No model downloads or inference, no paid calls, and no external project writes |
 | GitHub planning | Live issue specs #2-#8 were read; #2, #3, #4, #6, and #7 are implemented locally; board statuses remain to be reconciled after review |
 | Remaining implementation | #5 requires explicit scope for a Farseer bridge/API change; #8 requires a documented deterministic gap and explicit approval for model/resource use |
-| Next action | Complete CLI smoke checks, review against the fixed point, commit the finished work, and reconcile only the verified completed issues in Project #2 |
+| Next action | Commit the reviewed README export fix, reconcile completed issue statuses in Project #2, then request only the Farseer scope and semantic-resource decisions needed for #5 and #8 |
 
 New session: read this plan, inspect the actual workspace and applicable instructions, then continue only with the requested phase or decision.
 Update this checkpoint with changed files, checks actually run, decisions, and remaining work instead of creating duplicate handoff files.
