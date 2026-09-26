@@ -111,7 +111,7 @@ Apply [STACK.md](STACK.md)'s resource gates; no model is approved for download o
 | Model and hosted calls | No model downloads or inference, no paid calls, and no external project writes |
 | GitHub planning | Live issue specs #2-#8 were read; Project #2 statuses for #2, #3, #4, #6, and #7 are verified as Done; #5 and #8 remain Todo behind their explicit gates |
 | Remaining implementation | #5 requires explicit scope for a Farseer bridge/API change; #8 requires a documented deterministic gap and explicit approval for model/resource use |
-| Next action | Request only the Farseer scope and semantic-resource decisions needed for #5 and #8; implementation commits remain local pending the user's push workflow |
+| Next action | Request only the Farseer scope and representative evaluation-data/resource decisions needed for #5 and #8; implementation for #2-#4 and #6-#7 is pushed to `origin/main` |
 
 New session: read this plan, inspect the actual workspace and applicable instructions, then continue only with the requested phase or decision.
 Update this checkpoint with changed files, checks actually run, decisions, and remaining work instead of creating duplicate handoff files.
