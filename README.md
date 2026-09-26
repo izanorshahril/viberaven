@@ -1,16 +1,29 @@
 # Viberaven
 
-Viberaven is an evidence-backed catalogue and reusable research archive project for current products and tools.
+Viberaven is an evidence-backed catalogue and research archive for current products and tools.
+It stores source provenance and reviewed assessments locally, with a headless Rust library and command-line interface.
 
-The workspace is bootstrapped with a Rust library and CLI; ingestion, persistence, search, review, and export are not implemented yet.
+## Capabilities
 
-The bootstrap has no external Rust dependencies and its CLI works offline.
+- Ingest one explicitly supplied local `.txt`, `.md`, `.rst`, or `.html` file, or a public HTTPS page; inputs are limited to 5 MiB.
+- Preserve source identity, publication and retrieval metadata, content hashes, extracted text, and traceable evidence segments.
+- Deduplicate exact content and search evidence locally with SQLite FTS5.
+- Record draft, approved, or rejected product/version assessments; approved assessments require a decision, reviewer, date, and evidence.
+- Preview deterministic README or CSV exports, then apply them only to an explicit destination after checking its fingerprint.
+- Back up an export target before applying and support rollback while the target still matches the applied content.
+- Schedule bounded HTTPS refreshes and run them once from the CLI; changed content creates a pending review proposal, while prior evidence remains available.
+- Record source-change review decisions without inferring product identity, supersession, or export changes.
+- No background service starts automatically.
 
-The package requires Rust 1.85 or newer and Cargo.
+Web retrieval uses HTTPS only, checks resolved addresses, rejects redirects and credential-like URL query parameters, and applies time and size limits.
+Tests use offline fixtures and do not contact external sources.
 
-On this machine, Rust is installed in `%USERPROFILE%\.cargo\bin`, which is not on the initial PowerShell PATH.
+## Requirements
 
-To expose it in the current PowerShell session, run:
+Rust 1.88 or newer and Cargo are required.
+The first build needs the pinned crates in `Cargo.lock`; after fetching them, build and tests can run offline.
+
+On this machine, Rust is installed in `%USERPROFILE%\.cargo\bin`, which may need to be added to the current PowerShell session's path.
 
 ```powershell
 $env:PATH = "$env:USERPROFILE\.cargo\bin;$env:PATH"
@@ -22,9 +35,9 @@ $env:PATH = "$env:USERPROFILE\.cargo\bin;$env:PATH"
 cargo run -- --help
 ```
 
-```powershell
-cargo run -- --version
-```
+The CLI supports `ingest`, `search`, `assessment`, `export`, `refresh`, and `rebuild-search` commands, including `refresh changes list` and `refresh changes review` for source-change proposals.
+Run `cargo run -- --help` for the command list and option summary.
+The default database is `%LOCALAPPDATA%\Viberaven\catalogue.sqlite3`; `--db PATH` selects another location.
 
 ## Check
 
@@ -44,24 +57,26 @@ cargo test
 
 ```text
 .
+├── .agents/skills/viberaven-project-board/SKILL.md
+├── docs/agents/             # Issue tracking, triage labels, and domain guidance
+├── docs/research/           # GitHub Projects CLI skill research
 ├── src/
-│   ├── lib.rs       # CLI argument parsing and help text
-│   └── main.rs      # CLI entry point
-├── .gitignore
+│   ├── cli.rs               # Non-interactive CLI
+│   ├── export.rs            # Deterministic preview, apply, backup, and rollback
+│   ├── ingest.rs            # Bounded local and HTTPS source retrieval
+│   ├── refresh.rs           # One-shot refresh job runner
+│   ├── store.rs             # SQLite provenance, evidence, assessments, and jobs
+│   ├── lib.rs               # Public library modules and CLI exports
+│   └── main.rs              # CLI entry point
+├── tests/                   # Offline workflow and recovery coverage
 ├── AGENTS.md
 ├── Cargo.lock
 ├── Cargo.toml
-├── docs/
-│   └── agents/
-│       ├── domain.md
-│       ├── issue-tracker.md
-│       └── triage-labels.md
-├── HANDOFF.md
 ├── PLAN.md
 ├── README.md
 └── STACK.md
 ```
 
-Read [PLAN.md](PLAN.md) for the phased delivery sequence and [STACK.md](STACK.md) for dependency, cost, and resource decisions.
-
-Read [docs/agents/issue-tracker.md](docs/agents/issue-tracker.md) for the GitHub Issues and Project workflow.
+Read [PLAN.md](PLAN.md) for scope and the current checkpoint, and [STACK.md](STACK.md) for dependency and resource decisions.
+Read [docs/agents/issue-tracker.md](docs/agents/issue-tracker.md) for GitHub Issues and Project configuration.
+Use [.agents/skills/viberaven-project-board/SKILL.md](.agents/skills/viberaven-project-board/SKILL.md) for browserless board operations.

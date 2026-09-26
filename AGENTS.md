@@ -13,6 +13,10 @@
 
 Track specifications and implementation tickets in GitHub Issues; use the Viberaven Roadmap Project for planning status after it is linked. See `docs/agents/issue-tracker.md`.
 
+### Project board operations
+
+Use [.agents/skills/viberaven-project-board/SKILL.md](.agents/skills/viberaven-project-board/SKILL.md) when creating or linking the Roadmap Project, creating or placing issues on it, reviewing board coverage, or updating Project fields; the skill reads `docs/agents/issue-tracker.md` for configuration.
+
 ### Triage labels
 
 Map Matt Pocock's five canonical triage roles to this repository's label names. See `docs/agents/triage-labels.md`.

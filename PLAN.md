@@ -1,6 +1,6 @@
 # Viberaven implementation plan
 
-Status: Phase 1 bootstrap and GitHub CLI planning setup complete; Phase 2 has not started.
+Status: Phase 1 bootstrap, Phase 2 vertical slice, and Phase 4 refresh/export workflows are implemented; Phase 3 needs a separately scoped Farseer bridge extension, and Phase 5 remains gated on an evidenced quality gap and explicit resource approval.
 Updated at local date 2026-09-26, Asia/Kuala_Lumpur.
 Read this file to resume; read [STACK.md](STACK.md) for stack decisions, exceptions, costs, and memory gates.
 These documents do not authorize installation, model/API spending, publishing, or changes to adjacent projects.
@@ -14,11 +14,14 @@ Later use the same evidence for guides, workflows, and other content rather than
 
 ## Current state and references
 
-- Workspace: `D:\Dev\viberaven`; Phase 1 has a minimal Rust library/CLI, README, agent guidance, and Git repository pushed to `origin/main`.
-- GitHub repository: `izanorshahril/viberaven`, with local `main` tracking `origin/main`; Matt Pocock's GitHub issue conventions are configured.
-- GitHub Project and issue APIs work from a network-enabled shell; sandboxed `gh auth status` still reports an invalid keyring token, so authentication differs across execution contexts.
-- The private user-owned [Viberaven Roadmap Project](https://github.com/users/izanorshahril/projects/2) is created and linked to `izanorshahril/viberaven`; `gh issue create --project` and `gh project item-add` support routine CLI-only tracking, while setting a default repository in the UI is optional.
-- The five triage labels are present in the repository; the existing `bug` and `enhancement` category labels are also present.
+- Workspace: `D:\Dev\viberaven`; the Rust library and non-interactive CLI implement bounded ingest, local evidence search, human-reviewed assessments, refresh jobs, change proposals, and deterministic export.
+- GitHub repository: `izanorshahril/viberaven`, on local branch `main`; the repository issue tracker and [Roadmap Project #2](https://github.com/users/izanorshahril/projects/2) are configured for browserless `gh` operations.
+- GitHub auth was verified with the `project` scope; no token values were copied or persisted.
+- Issues [#2-#4](https://github.com/izanorshahril/viberaven/issues/2), [#6](https://github.com/izanorshahril/viberaven/issues/6), and [#7](https://github.com/izanorshahril/viberaven/issues/7) are implemented locally; project status reconciliation follows final review and commit.
+- Issue [#5](https://github.com/izanorshahril/viberaven/issues/5) needs an explicit Farseer bridge/API extension because its current widget bridge exposes no Viberaven catalogue or review actions.
+- Issue [#8](https://github.com/izanorshahril/viberaven/issues/8) remains gated; no deterministic-baseline gap is documented, and no model or inference resources were approved.
+- `Cargo.toml` exact-pins the direct Rust dependencies, and `Cargo.lock` pins their transitive versions.
+- `D:\Dev\awesome-vibe-ai` and `D:\Dev\farseer` were inspected but not modified; their existing files and contracts remain separate.
 - Local `D:\Dev\vibe-cat` is absent, but the public [vibe-cat prototype](https://github.com/izanorshahril/vibe-cat) remains available; preserve useful behavior, not its Python implementation.
 - [yt-research](https://github.com/izanorshahril/yt-research) provides transcript/source identity and export references; it is not the new runtime.
 - `D:\Dev\awesome-vibe-ai` contains the README/CSV and untracked `Inspirationst.txt`; its listings are discovery leads, not current factual authority; preserve unrelated edits.
@@ -101,15 +104,14 @@ Apply [STACK.md](STACK.md)'s resource gates; no model is approved for download o
 
 | Item | State |
 | --- | --- |
-| Completed | Workspace/prototype/Farseer inspection; contributor research; cost/memory filtering; planning documents; Phase 1 bootstrap |
-| Files created | `HANDOFF.md`, `README.md`, `AGENTS.md`, `.gitignore`, `Cargo.toml`, `Cargo.lock`, `src/lib.rs`, `src/main.rs`; `docs/agents/` contains tracker, labels, and domain guidance; updated `PLAN.md` and `STACK.md` |
-| Application code / tests / Git initialization | Minimal help/version CLI and parser test added; Git initialized and pushed to `origin/main` |
-| Checks | `cargo build --offline`, `cargo test --offline` (1 passed), `cargo fmt --all -- --check`, `cargo clippy --offline --all-targets -- -D warnings`, CLI help/version, and unsupported-argument exit code 2 all passed |
-| Installs / downloads / inference / paid model calls | No dependencies installed; no model download/inference or paid calls |
-| Adjacent repositories / existing services | Not modified |
-| Next action | Phase 2 only after an implementation request |
-| Optional AI prerequisites | Locate llama.cpp executable; verify compatible build; evaluate a small model; approve resource use or hosted budget |
-| GitHub planning setup | Repository-side skill config, remote triage labels, and linked Project #2 are ready; create issues with `gh issue create --project "Viberaven Roadmap"`; no implementation issues have been created |
+| Completed | Phase 1 bootstrap; Phase 2 ingest/search/review/export-preview slice; Phase 4 durable refresh, review proposals, explicit export/apply/rollback; GitHub Project skill research and repo-local board skill |
+| Changed files | `Cargo.toml`, `Cargo.lock`, `src/{cli,export,ingest,lib,main,refresh,store}.rs`, `tests/{refresh_state,vertical_slice}.rs`, `README.md`, `PLAN.md`, `STACK.md`, and Clippy cleanup; removed obsolete `HANDOFF.md` |
+| Checks | `cargo fmt --all -- --check`, `cargo clippy --locked --offline --all-targets -- -D warnings`, and `cargo test --locked --offline` pass; 11 tests pass across library and integration suites |
+| Storage and networking | SQLite is bundled with FTS5; inputs and network work are bounded; default operation is offline, and no background service starts |
+| Model and hosted calls | No model downloads or inference, no paid calls, and no external project writes |
+| GitHub planning | Live issue specs #2-#8 were read; #2, #3, #4, #6, and #7 are implemented locally; board statuses remain to be reconciled after review |
+| Remaining implementation | #5 requires explicit scope for a Farseer bridge/API change; #8 requires a documented deterministic gap and explicit approval for model/resource use |
+| Next action | Complete CLI smoke checks, review against the fixed point, commit the finished work, and reconcile only the verified completed issues in Project #2 |
 
-New session: read this plan, inspect the actual workspace and applicable instructions, then work only on the requested phase.
+New session: read this plan, inspect the actual workspace and applicable instructions, then continue only with the requested phase or decision.
 Update this checkpoint with changed files, checks actually run, decisions, and remaining work instead of creating duplicate handoff files.

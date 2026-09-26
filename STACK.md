@@ -1,7 +1,7 @@
 # Viberaven stack shortlist
 
-Status: Phase 1 bootstrap exists with no external Rust dependencies; no model download or inference performed.
-Updated at local date 2026-09-23, Asia/Kuala_Lumpur.
+Status: Phase 1 bootstrap, Phase 2 vertical slice, and Phase 4 refresh/export workflows are implemented; Farseer UI and optional semantic evaluation remain gated.
+Updated at local date 2026-09-26, Asia/Kuala_Lumpur.
 Most repository metrics were checked on 2026-09-21; llama.cpp and local model inventory were checked on local date 2026-09-22.
 Start implementation from [PLAN.md](PLAN.md); this file owns selection, exclusions, costs, and resource limits.
 
@@ -42,9 +42,21 @@ No reliable monthly star-growth series was collected.
 | [Vite](https://github.com/vitejs/vite) | 82,931 / 430 | Sep 21 | Farseer's existing widget build | Standalone UI build only when requested |
 
 Dates are inspected non-bot commits and can include build/documentation work; they do not certify release stability.
-No versions are finalized here; reusing Farseer's stack does not mean copying its older pins without review.
-Exact-pin new dependencies and retain their lockfiles; commit only when requested.
-Verify FTS5 in the selected SQLite build and keep blocking database work off async request execution.
+
+## Adopted Rust dependencies
+
+| Crate | Exact version and features | Use |
+| --- | --- | --- |
+| `html2text` | `=0.17.1` | Convert supported HTML pages into searchable text |
+| `reqwest` | `=0.13.5`, `default-features = false`, `blocking`, `rustls` | Bounded HTTPS retrieval from explicit CLI requests |
+| `rusqlite` | `=0.40.2`, `bundled` | Local SQLite persistence with bundled FTS5 |
+| `sha2` | `=0.11.0` | Content-addressed source and export hashes |
+
+These are the direct application dependencies in `Cargo.toml`; their exact transitive versions are recorded in `Cargo.lock`.
+The package requires Rust 1.88 or newer to satisfy the selected SQLite binding's MSRV.
+The retrieval client uses its blocking API because scheduled work runs as a bounded CLI command; no Tokio or resident service is needed.
+Clap, Serde, Axum, React, and Vite remain shortlist candidates, not direct Viberaven dependencies.
+SQLite is bundled with FTS5 enabled, so Viberaven does not require a separate database service or SQLite installer.
 
 ## Tooling shortlist
 

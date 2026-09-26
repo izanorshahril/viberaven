@@ -1,16 +1,15 @@
 use std::{env, process::ExitCode};
-use viberaven::{CliAction, VERSION, help_text, parse_args};
+use viberaven::{execute, help_text};
 
 fn main() -> ExitCode {
     let args: Vec<_> = env::args_os().skip(1).collect();
 
-    match parse_args(&args) {
-        Ok(CliAction::Help) => {
-            println!("{}", help_text());
-            ExitCode::SUCCESS
-        }
-        Ok(CliAction::Version) => {
-            println!("viberaven {VERSION}");
+    match execute(&args) {
+        Ok(output) => {
+            if !output.stderr.is_empty() {
+                eprint!("{}", output.stderr);
+            }
+            print!("{}", output.stdout);
             ExitCode::SUCCESS
         }
         Err(error) => {
